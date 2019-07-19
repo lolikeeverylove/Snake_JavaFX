@@ -1,0 +1,10 @@
+.idea/*
+
+*.class
+
+*.war
+*.jar
+*.ear
+
+/out/artifacts/*
+
