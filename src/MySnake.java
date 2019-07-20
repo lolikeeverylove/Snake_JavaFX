@@ -13,7 +13,6 @@ public void handle(KeyEvent event) { если второй варик эту ш�
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -65,7 +64,7 @@ public class MySnake extends Application {
         Canvas c =new Canvas(width*cornersize,height*cornersize);
         GraphicsContext gc =c.getGraphicsContext2D();
         root.getChildren().add(c);
-    //background
+       //background
             new AnimationTimer() {
                 long lastTick = 0;
 
@@ -103,7 +102,7 @@ public class MySnake extends Application {
                 newFood();
 
             }
-        });//может не сработать так как нужно if else
+        });
             firstSnake();
             zabor();
             stage.setScene(scene); stage.setResizable(false);
@@ -120,11 +119,11 @@ public class MySnake extends Application {
             gc.fillText("Game Over", 100, 250);
             return;
         }
-        //peredvizenie hvosta
+        //movement of the tail
         for(int i = snake.size()-1; i>=1;i--){
             snake.get(i).x =snake.get(i-1).x;
             snake.get(i).y=snake.get(i-1).y;
-        }//peredvizenie golovy
+        }//movement of the head
         switch (dir) {
             case up:
                 snake.get(0).y--;
@@ -158,12 +157,12 @@ public class MySnake extends Application {
             snake.add(new Corner(-1,-1));
             newFood();
         }
-        //vrezalsy
+        //slam
         for (int i = 1; i < snake.size(); i++) {
             if (snake.get(0).x == snake.get(i).x && snake.get(0).y == snake.get(i).y) {
                 gameOver = true;
             }
-        }//vrezalsy v zabor
+        }//crashed into a fence
         for (int i = 0; i <zabor.size() ; i++) {
             if(snake.get(0).x==zabor.get(i).x&&snake.get(0).y==zabor.get(i).y){
                 gameOver=true;
@@ -173,11 +172,11 @@ public class MySnake extends Application {
 
 
         //frontend
-        //vse pole //rect-прямоугольник
+        //all field//rect-прямоугольник
         gc.setFill(Color.BLACK);
         gc.fillRect(0,0,width*cornersize,height*cornersize);
 
-        //chet
+        //Score
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("",30));
         gc.fillText("Score: " + (speed - 6), 10, 30);
@@ -214,7 +213,7 @@ public class MySnake extends Application {
         }
 
         gc.drawImage(image,snake.get(0).x*cornersize,snake.get(0).y * cornersize,cornersize-1,cornersize-1);
-        //zabor
+        //fence
         for(Corner c: zabor){
             gc.setFill(Color.BLUEVIOLET);
             gc.fillRect(c.x*cornersize,c.y * cornersize,cornersize-1,cornersize-1);//-1 для чтоб видно границы
