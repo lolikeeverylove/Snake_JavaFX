@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -26,7 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 public class MySnake extends Application {
-    static Image image=new Image("http://icons.iconarchive.com/icons/jeanette-foshee/simpsons-02/32/Townspeople-Snake-icon.png");
+    static Image image=new Image("http://i.mirozor.ru/u/36/fd209654e111e7981ec8b9a2a3b318/-/favicon_335.png");
     static int speed = 5;
     static int foodcolor = 0;
     static int width = 20;//короче это тут по другому работает и означает что 20 клеток(размером cornersize)
@@ -34,16 +35,13 @@ public class MySnake extends Application {
     static int foodX = 0;
     static int foodY = 0;
     static int cornersize = 25;//это крч размер одной клетки (яблока)
-    //static List<String> side =new ArrayList<>();
-    //static String dir =side.get(2);
     static List <Corner> zabor = new ArrayList<>();
     static List<Corner> snake = new ArrayList<>();
      static Dir dir = Dir.left;
     static boolean gameOver = false;
     static Random rand = new Random();
     static CheckBox pause=new CheckBox();
-    //static Button restart =new Button("Restart");
-
+    static boolean restart = true;
     public enum Dir {
         left, right, up, down
     }
@@ -58,7 +56,9 @@ public class MySnake extends Application {
     }
     public void start(Stage stage) {
         try {
-            Label label=new Label();
+
+            Label label=new Label("Space - restart the game\n" + "Enter - pause the game");
+            label.setFont(new Font("", 18));
             pause.setSelected(true);
         newFood();
         VBox root =new VBox();
@@ -82,7 +82,8 @@ public class MySnake extends Application {
                 }
 
             }.start();
-        Scene scene =new Scene(new Group(root),width*cornersize,height*cornersize);
+            FlowPane flowPane=new FlowPane(root,label);flowPane.setPrefWidth(width*cornersize+200);
+        Scene scene =new Scene(new Group(flowPane),width*cornersize+200,height*cornersize);
         scene.setOnKeyPressed(event -> {
             KeyCode key=event.getCode();
             if(key == KeyCode.UP&&dir!=Dir.down){
@@ -94,14 +95,17 @@ public class MySnake extends Application {
             } else if(key == KeyCode.RIGHT&&dir!=Dir.left){
                 dir=Dir.right;
             } if (key==KeyCode.ENTER)pause.fire();
+            if (key==KeyCode.SPACE){
+                gameOver=false;
+                firstSnake();
+                zabor();
+                speed=5;
+                newFood();
+
+            }
         });//может не сработать так как нужно if else
-    snake.add(new Corner(width / 2,height /2));
-    snake.add(new Corner(width / 2,height /2));
-    snake.add(new Corner(width / 2,height /2));
-    zabor.add(new Corner(rand.nextInt(width),rand.nextInt(height)));
-    zabor.add(new Corner(zabor.get(0).x-1,zabor.get(0).y));
-    zabor.add(new Corner(zabor.get(0).x-2,zabor.get(0).y));
-//    side.add("up");side.add("down");side.add("right");side.add("left");
+            firstSnake();
+            zabor();
             stage.setScene(scene); stage.setResizable(false);
             stage.setTitle("SNAKE GAME");stage.show();
 }catch (Exception e){
@@ -167,6 +171,7 @@ public class MySnake extends Application {
 
         }
 
+
         //frontend
         //vse pole //rect-прямоугольник
         gc.setFill(Color.BLACK);
@@ -175,7 +180,7 @@ public class MySnake extends Application {
         //chet
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("",30));
-        gc.fillText("Score: " + (speed - 6), 50, 30);
+        gc.fillText("Score: " + (speed - 6), 10, 30);
 
         //color food
         Color cc=Color.WHITE;
@@ -224,13 +229,24 @@ public class MySnake extends Application {
         for (int i = 0; i < zabor.size(); i++) {
 
 
-        if(((foodX=rand.nextInt(height))!=zabor.get(i).x)&&((foodY=rand.nextInt(width))!=zabor.get(i).y)){
+        if(((foodX=rand.nextInt(height))!=zabor.get(i).x)&&(foodY=rand.nextInt(width))!=zabor.get(i).y){
     }}
         foodcolor = rand.nextInt(5);
         speed++;
     }
 
-
+    public static void firstSnake () {
+        snake.clear();
+        snake.add(0,new Corner(width / 2,height /2));
+        snake.add(1,new Corner(width / 2,height /2));
+        snake.add(2,new Corner(width / 2,height /2));
+    }
+    public static void zabor (){
+        zabor.clear();
+        zabor.add(new Corner(rand.nextInt(width),rand.nextInt(height)));
+        zabor.add(new Corner(zabor.get(0).x-1,zabor.get(0).y));
+        zabor.add(new Corner(zabor.get(0).x-2,zabor.get(0).y));
+    }
     public static void main(String[] args) {
         launch(args);
     }
