@@ -1,8 +1,7 @@
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;//можно видос запилить бекоз мало чего на джава фх особенно на русском особенно с участием меня)))
+import java.util.concurrent.atomic.AtomicBoolean;
 //надо сделать по кнопке рестарт, препятсвия
 //главное крч сделать чтобы если ты вправо движешься нельзя было нажать влево. типо как у телки варианта только два
 //потом тетрис и бомбера и надо заканчивать с javafx
@@ -13,15 +12,14 @@ public void handle(KeyEvent event) { если второй варик эту ш�
 */
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -41,6 +39,7 @@ public class MySnake extends Application {
      static Dir dir = Dir.left;
     static boolean gameOver = false;
     static Random rand = new Random();
+    static Button button =new Button("Pause");
 
     public enum Dir {
         left, right, up, down
@@ -57,6 +56,8 @@ public class MySnake extends Application {
     public void start(Stage stage) {
         try {
         newFood();
+        boolean[] pause = {false};
+        button.setOnAction(event -> pause[0] =true);
         VBox root =new VBox();
         Canvas c =new Canvas(width*cornersize,height*cornersize);
         GraphicsContext gc =c.getGraphicsContext2D();
@@ -71,14 +72,14 @@ public class MySnake extends Application {
                         tick(gc);
                         return;
                     }
-                    if (now - lastTick > 1000000000 /speed) {
+                    if ((now - lastTick > 1000000000 /speed)&&pause[0]==false) {
                         lastTick = now;
                         tick(gc);
                     }
                 }
 
             }.start();
-        Scene scene =new Scene(root,width*cornersize,height*cornersize);
+        Scene scene =new Scene(new Group(root, button),width*cornersize,height*cornersize);
         scene.setOnKeyPressed(event -> {
             KeyCode key=event.getCode();
             if(key == KeyCode.UP&&dir!=Dir.down){
@@ -109,7 +110,7 @@ public class MySnake extends Application {
         if (gameOver) {
             gc.setFill(Color.WHITE);
             gc.setFont(new Font(50));
-            gc.fillText("Game Over", width*cornersize / 2, height*cornersize / 2);
+            gc.fillText("Game Over", 100, 250);
             return;
         }
         //peredvizenie hvosta
@@ -171,8 +172,11 @@ public class MySnake extends Application {
         //chet
         gc.setFill(Color.WHITE);
         gc.setFont(new Font("",30));
-        gc.fillText("Score: " + (speed - 6), 10, 30);
+        gc.fillText("Score: " + (speed - 6), 50, 30);
 
+        //pause
+        gc.setFill(Color.WHEAT);
+        gc.fillRect(button.getLayoutX(),button.getLayoutY(),button.getWidth(),button.getHeight());
         //color food
         Color cc=Color.WHITE;
         switch (foodcolor) {
